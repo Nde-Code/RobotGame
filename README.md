@@ -6,7 +6,7 @@ Un petit jeu d'arcade assez compliquée à jouer mais qui est très amusant et d
 
 Vous pouvez directement cliquer ici: https://github.com/Nde-Code/RobotGame/releases/download/v1.0.5/RobotGame.exe
 
-> Votre antivirus va détecter le jeu comme malveillant car c'est un ".exe" non signé. Je vous recommande donc l'utilisation de "Windows Sandbox" (ou tout autre programme de machine virtuel) pour lancer le jeu si vous utilisez la version compilée (en .exe). Attention, si vous avez peu de mémoire, etc... les graphismes pourront s'avérer un peu "bugger"Votre antivirus va détecter le jeu comme malveillant car c'est un ".exe" non signé. Je vous recommande donc l'utilisation de "Windows Sandbox" (ou tout autre programme de machine virtuel) pour lancer le jeu si vous utilisez la version compilée (en .exe). Attention, si vous avez peu de mémoire, etc... les graphismes pourront s'avérer un peu "bugger".
+> Votre antivirus va détecter le jeu comme malveillant car c'est un ".exe" non signé. Je vous recommande donc l'utilisation de "Windows Sandbox" (ou tout autre programme de machine virtuel) pour lancer le jeu si vous utilisez la version compilée (en .exe). Attention, si vous avez peu de mémoire, etc... les graphismes pourront s'avérer un peu "bugger"Votre antivirus va détecter le jeu comme malveillant car c'est un ".exe" non signé. Je vous recommande donc l'utilisation de "Windows Sandbox" (ou tout autre programme de machine virtuel) pour lancer le jeu si vous utilisez la version compilée (en .exe).
 
 # Image:
 
