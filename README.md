@@ -14,7 +14,7 @@ Vous pouvez directement cliquer ici: https://github.com/Nde-Code/RobotGame/relea
 
 # Documentation:
 
-## Régles, But et Contrôl:
+## Régles, But et Contrôles:
 
 Le but du jeu est de récolter les pièces de monnaies et de tuer le plus de fantôme possible. Pour ce faire vous avez un terrain avec des passerelles sur lequel des fantômes et des pièces de monnaies apparaissez de manière aléatoire et il faudrait vous déplacer avec beaucoup de précision, sur ses passerelles. Lorsque, vous vous cognez contre un arbre, cela vous fait perdre 4 points de vie. Intéragir avec un fantôme le faire disparaître, mais vous fait perdre 5 points de vie et vous fait gagner 5 points au score. Lorsque vous arrivez à court de munitions, vous ne pouvez plus tirer, et un stockez de cartouche apparaît à un endroit aléatoire de la carte, et vous devez aller chercher se stocke, pour refaire le plein de cartouches. Lorsque vous tombez d'une passerelle, vous perdez 2 points de vie, et vous êtes téléporté à la même place que lors de l'exécution du jeu. Si vous restez inactif, vous perdez 4 points de vie. Pour vous déplacer à gauche, appuyer sur la flèche gauche de votre clavier, idem pour la droite, mais avec la flèche droite de votre clavier. Pour sauter sur une plateforme appuyer sur la touche "en haut" de votre clavier, et pour en redescendre, appuyer sur la touche "en bas" de votre clavier. La touche "espace" permet d'envoyer des projectiles. Appuyez sur la touche "Entrer" pour relancer le jeu.
 
