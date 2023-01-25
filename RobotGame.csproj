@@ -46,14 +46,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="downto.cs" />
+    <Compile Include="downProjectiles.cs" />
     <Compile Include="main.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="main.Designer.cs">
       <DependentUpon>main.cs</DependentUpon>
     </Compile>
-    <Compile Include="navigate.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="upProjectiles.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="projectiles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -69,11 +74,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
@@ -84,13 +84,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\block-one.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\bullet.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\dollar.png" />
+    <None Include="Resources\grass.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\iron.png" />
@@ -105,6 +99,7 @@
     <None Include="Resources\tree.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\loot.png" />
     <Content Include="Resources\ghost.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

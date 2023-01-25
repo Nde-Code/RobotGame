@@ -6,30 +6,32 @@ using System.Windows.Forms;
 
 namespace RobotGame
 {
-    public partial class main : Form
+    public partial class RobotGameWindow : Form
     {
-        public main()
+        public RobotGameWindow()
         {
             InitializeComponent();
-            MainStart();
-            summonMonsterleft();
-            summonMonsterRight();
+            onLoading();
+            spawnMonsterLeft();
+            spawnMonsterRight();
         }
-        
-        int pvBar = 100;
-        int ammoCount = 100;
+
+        int xCoord;
+        int pvCount = 100;
+        int projectilesCounter = 100;
         int score;
         int money;
-        int ammoEntityCount;
+        int ProjectilesLootCounter;
+        int playerSpeed = 5;
         
-        int playerPower = 7;
-        bool goLeft, goRight;
+        bool isLeft, isRight;
         bool gameOver;
-        string actMove;
+
+        string whereMoving;
         string move;
 
         
-        int[] bulletXpos = {
+        int[] swordXpos = {
             556,
             545,
             341,
@@ -37,16 +39,17 @@ namespace RobotGame
             926,
         };
         
-        int[] bulletYpos = {
-            186,
-            399,
-            346,
-            125,
-            98,
+        int[] swordYpos = {
+            150,
+            363,
+            310,
+            89,
+            62,
         };
+
         int[] moneyXpos = {
             656,
-            645,
+            625,
             922, 
             1045,
             960,
@@ -55,14 +58,15 @@ namespace RobotGame
         };
         
         int[] moneyYpos = {
-            186,
-            399,
-            421,
-            98,
-            270,
-            126,
-            346,
+            176,
+            389,
+            411,
+            88,
+            260,
+            116,
+            336,
         };
+
         int[] randMonsterLeft = {
             130,
             901,
@@ -80,6 +84,7 @@ namespace RobotGame
             108,
             286,
         };
+
         int[] randRightLeft = {
             940,
             618,
@@ -91,450 +96,487 @@ namespace RobotGame
             381,
             108,
         };
-        Random location = new Random();
-        
-        int monsterLeft = 2;
-        
-        int xCoord;
+
+        Random randomLocation = new Random();
         
         List<PictureBox> currentRightGhost = new List<PictureBox>();
         
-        List<PictureBox> currentGhost = new List<PictureBox>();
+        List<PictureBox> currentLeftGhost = new List<PictureBox>();
         
-        List<PictureBox> currentBullet = new List<PictureBox>();
+        List<PictureBox> currentProjectilesBox = new List<PictureBox>();
         
-        List<PictureBox> moneyList = new List<PictureBox>();
+        List<PictureBox> currentMoney = new List<PictureBox>();
         
-        private void MainStart() => move = "starting";
+        private void onLoading() => move = "starting";
         
         private void clockTickMain(object sender, EventArgs e)
         {
+
             MoneyCount.Text = $"Argent: {money}";
             FragCounter.Text = $"Score: {score}";
-            monster_count.Text = $"Monstres: {currentGhost.Count + currentRightGhost.Count}";
+            MonsterCounter.Text = $"Monstres: {currentLeftGhost.Count + currentRightGhost.Count}";
 
 
             if (money <= 0)
             {
                 money = 0;
             }
-            if (currentGhost.Count == 1)
+
+            if (currentLeftGhost.Count is 0 && gameOver != true)
             {
-                summonMonsterleft();
+                spawnMonsterLeft();
             }
-            if (currentRightGhost.Count == 1)
+
+            if (currentRightGhost.Count is 0 && gameOver != true)
             {
-                summonMonsterRight();
+                spawnMonsterRight();
             }
-            if (ammoCount < 29 && ammoEntityCount == 0)
+
+            if (projectilesCounter is 0 && ProjectilesLootCounter is 0)
             {
-                ammoEntityCount = 1;
-                spawnBullet();
+                ProjectilesLootCounter = 1;
+                spawnProjectilesBox();
             }
-            foreach (Control entityBu in this.Controls)
+
+            foreach (Control entityProjectilesLoot in this.Controls)
             {
-                if (entityBu is PictureBox && (string)entityBu.Tag == "bulletTag")
+                if (entityProjectilesLoot is PictureBox && (string)entityProjectilesLoot.Tag == "ProjectileLootTag")
                 {
-                    if (entityBu.Bounds.IntersectsWith(MainPlayer.Bounds))
+                    if (entityProjectilesLoot.Bounds.IntersectsWith(Robot.Bounds))
                     {
-                        ammoEntityCount = 0;
-                        ammoCount += 72;
-                        this.Controls.Remove(entityBu);
-                        ((PictureBox)entityBu).Dispose();
-                        currentBullet.Remove((PictureBox)entityBu);
+                        ProjectilesLootCounter = 0;
+                        projectilesCounter += 100;
+                        this.Controls.Remove(entityProjectilesLoot);
+                        ((PictureBox)entityProjectilesLoot).Dispose();
+                        currentProjectilesBox.Remove((PictureBox)entityProjectilesLoot);
                     }
                 }
             }
+
+            foreach(Control entityDownProjectiles in this.Controls)
+            foreach(Control entityUpProjectiles in this.Controls)
+            foreach(Control entityKillProjectiles in this.Controls)
+            {
+                if(entityDownProjectiles is PictureBox && (string)entityDownProjectiles.Tag is "DownProjectileTag" && entityKillProjectiles is PictureBox && (string)entityKillProjectiles.Tag is "ProjectileTag")
+                {
+                    entityDownProjectiles.Dispose();
+                    ((PictureBox)entityDownProjectiles).Dispose();
+                    this.Controls.Remove(entityDownProjectiles);
+                }
+                if (entityUpProjectiles is PictureBox && (string)entityUpProjectiles.Tag is "UpProjectileTag" && entityKillProjectiles is PictureBox && (string)entityKillProjectiles.Tag is "ProjectileTag")
+                {
+                    entityUpProjectiles.Dispose();
+                    ((PictureBox)entityUpProjectiles).Dispose();
+                    this.Controls.Remove(entityUpProjectiles);
+                }
+            }
+
             foreach(Control entityMoney in this.Controls)
             {
-                if(entityMoney is PictureBox && (string)entityMoney.Tag is "MoneyBox")
+                if(entityMoney is PictureBox && (string)entityMoney.Tag is "MoneyTag")
                 {
-                    if (entityMoney.Bounds.IntersectsWith(MainPlayer.Bounds))
+                    if (entityMoney.Bounds.IntersectsWith(Robot.Bounds))
                     {
                         money++;
                         entityMoney.Dispose();
                         ((PictureBox)entityMoney).Dispose();
                         this.Controls.Remove(entityMoney);
-                        moneyList.Remove((PictureBox)entityMoney);
+                        currentMoney.Remove((PictureBox)entityMoney);
                     }
                 }
             }
-            foreach (Control bulletEntity in this.Controls)
+
+            foreach (Control projectileEntity in this.Controls)
             {
-                if (bulletEntity is PictureBox && (string)bulletEntity.Tag == "ProjBallLauncher")
+                if (projectileEntity is PictureBox && (string)projectileEntity.Tag is "ProjectileTag")
                 {
-                    foreach (Control entityMonst in this.Controls)
+                    foreach (Control entityGhost in this.Controls)
                     {
-                        if (entityMonst is PictureBox && (string)entityMonst.Tag == "Ghostms")
+                        if (entityGhost is PictureBox && (string)entityGhost.Tag is "GhostLeftTag")
                         {
-                            if (entityMonst.Bounds.IntersectsWith(bulletEntity.Bounds))
+                            if (entityGhost.Bounds.IntersectsWith(projectileEntity.Bounds))
                             {
                                 score++;
-                                this.Controls.Remove(entityMonst);
-                                this.Controls.Remove(bulletEntity);
-                                ((PictureBox)bulletEntity).Dispose();
-                                ((PictureBox)entityMonst).Dispose();
-                                currentGhost.Remove((PictureBox)entityMonst);
+                                this.Controls.Remove(entityGhost);
+                                this.Controls.Remove(projectileEntity);
+                                ((PictureBox)projectileEntity).Dispose();
+                                ((PictureBox)entityGhost).Dispose();
+                                currentLeftGhost.Remove((PictureBox)entityGhost);
                             }
                         }
-                        if (entityMonst is PictureBox && (string)entityMonst.Tag == "GhostR")
+                        if (entityGhost is PictureBox && (string)entityGhost.Tag is "GhostRightTag")
                         {
-                            if (entityMonst.Bounds.IntersectsWith(bulletEntity.Bounds))
+                            if (entityGhost.Bounds.IntersectsWith(projectileEntity.Bounds))
                             {
                                 score++;
-                                this.Controls.Remove(entityMonst);
-                                this.Controls.Remove(bulletEntity);
-                                ((PictureBox)bulletEntity).Dispose();
-                                ((PictureBox)entityMonst).Dispose();
-                                currentRightGhost.Remove((PictureBox)entityMonst);
-                                entityMonst.Dispose();
+                                this.Controls.Remove(entityGhost);
+                                this.Controls.Remove(projectileEntity);
+                                ((PictureBox)projectileEntity).Dispose();
+                                ((PictureBox)entityGhost).Dispose();
+                                currentRightGhost.Remove((PictureBox)entityGhost);
+                                entityGhost.Dispose();
                             }
                         }
                     }
                 }
             }
-            
-            foreach (Control entityGR in this.Controls)
-            {
-                if (entityGR is PictureBox && (string)entityGR.Tag == "GhostR")
-                {
-                    entityGR.Left -= monsterLeft;
 
-                    if (entityGR.Bounds.IntersectsWith(tree10.Bounds))
+            foreach (Control projectileLootEntity in this.Controls)
+            {
+                if (projectileLootEntity is PictureBox && (string)projectileLootEntity.Tag is "ProjectileLootTag")
+                {
+                    foreach (Control entityGhost in this.Controls)
                     {
-                        entityGR.Dispose();
-                        currentRightGhost.Remove((PictureBox)entityGR);
-                        this.Controls.Remove(entityGR);
+                        if (entityGhost is PictureBox && (string)entityGhost.Tag is "GhostLeftTag")
+                        {
+                            if (entityGhost.Bounds.IntersectsWith(projectileLootEntity.Bounds))
+                            {
+                                this.Controls.Remove(entityGhost);
+                                ((PictureBox)entityGhost).Dispose();
+                                currentLeftGhost.Remove((PictureBox)entityGhost);
+                                entityGhost.Dispose();
+                            }
+                        }
+                        if (entityGhost is PictureBox && (string)entityGhost.Tag is "GhostRightTag")
+                        {
+                            if (entityGhost.Bounds.IntersectsWith(projectileLootEntity.Bounds))
+                            {
+                                this.Controls.Remove(entityGhost);
+                                ((PictureBox)entityGhost).Dispose();
+                                currentRightGhost.Remove((PictureBox)entityGhost);
+                                entityGhost.Dispose();
+                            }
+                        }
                     }
-                    if (entityGR.Bounds.IntersectsWith(tree8.Bounds))
+                }
+            }
+
+            foreach (Control entityGhostLefthostRight in this.Controls)
+            {
+                if (entityGhostLefthostRight is PictureBox && (string)entityGhostLefthostRight.Tag is "GhostRightTag")
+                {
+
+                    entityGhostLefthostRight.Left -= 2;
+
+                    if (entityGhostLefthostRight.Bounds.IntersectsWith(tree10.Bounds))
                     {
-                        entityGR.Dispose();
-                        currentRightGhost.Remove((PictureBox)entityGR);
-                        this.Controls.Remove(entityGR);
+                        entityGhostLefthostRight.Dispose();
+                        currentRightGhost.Remove((PictureBox)entityGhostLefthostRight);
+                        this.Controls.Remove(entityGhostLefthostRight);
                     }
-                    if (entityGR.Bounds.IntersectsWith(stopone.Bounds))
+                    if (entityGhostLefthostRight.Bounds.IntersectsWith(tree8.Bounds))
                     {
-                        currentRightGhost.Remove((PictureBox)entityGR);
-                        entityGR.Dispose();
-                        this.Controls.Remove(entityGR);
+                        entityGhostLefthostRight.Dispose();
+                        currentRightGhost.Remove((PictureBox)entityGhostLefthostRight);
+                        this.Controls.Remove(entityGhostLefthostRight);
                     }
-                    if (entityGR.Bounds.IntersectsWith(MainPlayer.Bounds))
+                    if (entityGhostLefthostRight.Bounds.IntersectsWith(Barrier3.Bounds))
+                    {
+                        currentRightGhost.Remove((PictureBox)entityGhostLefthostRight);
+                        entityGhostLefthostRight.Dispose();
+                        this.Controls.Remove(entityGhostLefthostRight);
+                    }
+                    if (entityGhostLefthostRight.Bounds.IntersectsWith(Robot.Bounds))
                     {
                         score += 5;
-                        pvBar -= 5;
-                        entityGR.Dispose();
-                        currentRightGhost.Remove((PictureBox)entityGR);
-                        this.Controls.Remove(entityGR);
+                        pvCount -= 5;
+                        entityGhostLefthostRight.Dispose();
+                        currentRightGhost.Remove((PictureBox)entityGhostLefthostRight);
+                        this.Controls.Remove(entityGhostLefthostRight);
                     }
                 }
             }
             
-            foreach (Control entityG in this.Controls)
+            foreach (Control entityGhostLeft in this.Controls)
             {
-                if (entityG is PictureBox && (string)entityG.Tag == "Ghostms")
+                if (entityGhostLeft is PictureBox && (string)entityGhostLeft.Tag is "GhostLeftTag")
                 {
-                    entityG.Left += monsterLeft;
+                    entityGhostLeft.Left += 2;
 
-                    if (entityG.Bounds.IntersectsWith(tree4.Bounds))
+                    if (entityGhostLeft.Bounds.IntersectsWith(tree4.Bounds))
                     {
-                        currentGhost.Remove((PictureBox)entityG);
-                        entityG.Dispose();
-                        this.Controls.Remove(entityG);
+                        currentLeftGhost.Remove((PictureBox)entityGhostLeft);
+                        entityGhostLeft.Dispose();
+                        this.Controls.Remove(entityGhostLeft);
                     }
-                    if (entityG.Bounds.IntersectsWith(tree12.Bounds))
+                    if (entityGhostLeft.Bounds.IntersectsWith(tree12.Bounds))
                     {
-                        currentGhost.Remove((PictureBox)entityG);
-                        entityG.Dispose();
-                        this.Controls.Remove(entityG);
+                        currentLeftGhost.Remove((PictureBox)entityGhostLeft);
+                        entityGhostLeft.Dispose();
+                        this.Controls.Remove(entityGhostLeft);
                     }
-                    if (entityG.Bounds.IntersectsWith(tree5.Bounds))
+                    if (entityGhostLeft.Bounds.IntersectsWith(tree5.Bounds))
                     {
-                        currentGhost.Remove((PictureBox)entityG);
-                        entityG.Dispose();
-                        this.Controls.Remove(entityG);
+                        currentLeftGhost.Remove((PictureBox)entityGhostLeft);
+                        entityGhostLeft.Dispose();
+                        this.Controls.Remove(entityGhostLeft);
                     }
-                    if (entityG.Bounds.IntersectsWith(stopthree.Bounds))
+                    if (entityGhostLeft.Bounds.IntersectsWith(tree11.Bounds))
                     {
-                        currentGhost.Remove((PictureBox)entityG);
-                        entityG.Dispose();
-                        this.Controls.Remove(entityG);
+                        currentLeftGhost.Remove((PictureBox)entityGhostLeft);
+                        entityGhostLeft.Dispose();
+                        this.Controls.Remove(entityGhostLeft);
                     }
-                    if (entityG.Bounds.IntersectsWith(stopone.Bounds))
+                    if (entityGhostLeft.Bounds.IntersectsWith(Barrier1.Bounds))
                     {
-                        currentGhost.Remove((PictureBox)entityG);
-                        entityG.Dispose();
-                        this.Controls.Remove(entityG);
+                        currentLeftGhost.Remove((PictureBox)entityGhostLeft);
+                        entityGhostLeft.Dispose();
+                        this.Controls.Remove(entityGhostLeft);
                     }
-                    if (entityG.Bounds.IntersectsWith(stopFour.Bounds))
+                    if (entityGhostLeft.Bounds.IntersectsWith(Barrier3.Bounds))
                     {
-                        currentGhost.Remove((PictureBox)entityG);
-                        entityG.Dispose();
-                        this.Controls.Remove(entityG);
+                        currentLeftGhost.Remove((PictureBox)entityGhostLeft);
+                        entityGhostLeft.Dispose();
+                        this.Controls.Remove(entityGhostLeft);
                     }
-                    if (entityG.Bounds.IntersectsWith(tree11.Bounds))
+                    if (entityGhostLeft.Bounds.IntersectsWith(Barrier5.Bounds))
                     {
-                        currentGhost.Remove((PictureBox)entityG);
-                        entityG.Dispose();
-                        this.Controls.Remove(entityG);
+                        currentLeftGhost.Remove((PictureBox)entityGhostLeft);
+                        entityGhostLeft.Dispose();
+                        this.Controls.Remove(entityGhostLeft);
                     }
-                    if (entityG.Bounds.IntersectsWith(tree13.Bounds))
+                    if (entityGhostLeft.Bounds.IntersectsWith(Barrier6.Bounds))
                     {
-                        currentGhost.Remove((PictureBox)entityG);
-                        entityG.Dispose();
-                        this.Controls.Remove(entityG);
+                        currentLeftGhost.Remove((PictureBox)entityGhostLeft);
+                        entityGhostLeft.Dispose();
+                        this.Controls.Remove(entityGhostLeft);
                     }
-                    if (entityG.Bounds.IntersectsWith(stopSix.Bounds))
+                    if (entityGhostLeft.Bounds.IntersectsWith(Robot.Bounds))
                     {
-                        currentGhost.Remove((PictureBox)entityG);
-                        entityG.Dispose();
-                        this.Controls.Remove(entityG);
-                    }
-                    if (entityG.Bounds.IntersectsWith(MainPlayer.Bounds))
-                    {
-                        currentGhost.Remove((PictureBox)entityG);
+                        currentLeftGhost.Remove((PictureBox)entityGhostLeft);
                         score += 5;
-                        pvBar -= 5;
-                        entityG.Dispose();
-                        this.Controls.Remove(entityG);
+                        pvCount -= 5;
+                        entityGhostLeft.Dispose();
+                        this.Controls.Remove(entityGhostLeft);
                     }
                 }
             }
             
-            if (pvBar > 1)
+            if (pvCount > 0)
             {
-                HealthBar.Value = pvBar;
+                HealthBar.Value = pvCount;
             }
             else
             {
                 foreach (Control EntityOnGames in this.Controls)
                 {
-                    if (EntityOnGames is PictureBox && (string)EntityOnGames.Tag is "Ghostms")
+                    if (EntityOnGames is PictureBox && (string)EntityOnGames.Tag is "GhostLeftTag")
                     {
                         ((PictureBox)EntityOnGames).Dispose();
                         this.Controls.Remove((PictureBox)EntityOnGames);
-                        currentGhost.Clear();
+                        currentLeftGhost.Clear();
                     }
-                    if (EntityOnGames is PictureBox && (string)EntityOnGames.Tag is "GhostR")
+                    if (EntityOnGames is PictureBox && (string)EntityOnGames.Tag is "GhostRightTag")
                     {
                         ((PictureBox)EntityOnGames).Dispose();
                         this.Controls.Remove((PictureBox)EntityOnGames);
                         currentRightGhost.Clear();
                     }
-                    if (EntityOnGames is PictureBox && (string)EntityOnGames.Tag is "MoneyBox")
+                    if (EntityOnGames is PictureBox && (string)EntityOnGames.Tag is "MoneyTag")
                     {
                         ((PictureBox)EntityOnGames).Dispose();
                         this.Controls.Remove((PictureBox)EntityOnGames);
-                        currentBullet.Clear();
+                        currentProjectilesBox.Clear();
                     }
-                    if (EntityOnGames is PictureBox && (string)EntityOnGames.Tag == "bulletTag")
+                    if (EntityOnGames is PictureBox && (string)EntityOnGames.Tag is "ProjectileLootTag")
                     {
                         ((PictureBox)EntityOnGames).Dispose();
                         this.Controls.Remove((PictureBox)EntityOnGames);
-                        moneyList.Clear();
+                        currentMoney.Clear();
                     }
                 }
 
                 gameOver = true;
-                endGames();
+                onGameOver();
+
             }
-            if (ammoCount > 1)
+
+            if (projectilesCounter > 1)
             {
-                AmmoBar.Value = ammoCount;
-            }
-            
-            if (goRight == true && goLeft == false && MainPlayer.Left + MainPlayer.Width < this.ClientSize.Width - 14 && gameOver != true)
-            {
-                MainPlayer.Left += playerPower;
-            }
-            if (goLeft == true && goRight == false && MainPlayer.Left > 4 && gameOver != true)
-            {
-                MainPlayer.Left -= playerPower;
+                ProjectileCounterBar.Value = projectilesCounter;
             }
             
-            foreach (Control entityStop in this.Controls)
+            if (isRight is true && isLeft is false && Robot.Left + Robot.Width < this.ClientSize.Width - 14 && gameOver != true)
             {
-                if (entityStop is PictureBox && (string)entityStop.Name == "stopone" ||
-                    entityStop is PictureBox && (string)entityStop.Name == "stoptwo" ||
-                    entityStop is PictureBox && (string)entityStop.Name == "stopthree" ||
-                    entityStop is PictureBox && (string)entityStop.Name == "stopFour" ||
-                    entityStop is PictureBox && (string)entityStop.Name == "stopFive" ||
-                    entityStop is PictureBox && (string)entityStop.Name == "stopSix")
+                Robot.Left += playerSpeed;
+            }
+
+            if (isLeft is true && isRight is false && Robot.Left > 4 && gameOver != true)
+            {
+                Robot.Left -= playerSpeed;
+            }
+            
+            foreach (Control entityBarrier in this.Controls)
+            {
+                if (entityBarrier is PictureBox && (string)entityBarrier.Tag is "Barrier")
                 {
-                    if (entityStop.Bounds.IntersectsWith(MainPlayer.Bounds))
+                    if (entityBarrier.Bounds.IntersectsWith(Robot.Bounds))
                     {
-                        pvBar -= 2;
-                        MainPlayer.Location = new Point((this.ClientSize.Width / 2) - (MainPlayer.Width / 2), 520);
+                        pvCount -= 5;
+                        Robot.Location = new Point((this.ClientSize.Width / 2) - (Robot.Width / 2), 521);
                     }
                 }
             }
-            
-            foreach (Control entityWind in this.Controls)
+
+            foreach (Control entityOnWindow in this.Controls)
             {
-                if (entityWind is Label && (string)entityWind.Name == "FragCounter" ||
-                   (string)entityWind.Name == "MoneyCount" ||
-                   (string)entityWind.Name == "HalthText" ||
-                   (string)entityWind.Name == "AmmoCount" ||
-                   (string)entityWind.Name == "tops_count"
-                )
+                if (entityOnWindow is Label && (string)entityOnWindow.Tag is "FragCounterTag" || (string)entityOnWindow.Tag is "moneyCounterTag" || (string)entityOnWindow.Tag is "HealthTextTag" || (string)entityOnWindow.Tag is "projectileTextTag" || (string)entityOnWindow.Tag is "MonsterCounterTag")
                 {
-                    if (entityWind.Bounds.IntersectsWith(MainPlayer.Bounds))
+                    if (entityOnWindow.Bounds.IntersectsWith(Robot.Bounds))
                     {
-                        MainPlayer.Location = new Point((this.ClientSize.Width / 2) - (MainPlayer.Width / 2), 520);
+                        Robot.Location = new Point((this.ClientSize.Width / 2) - (Robot.Width / 2), 521);
+                    }
+                }
+
+                if(entityOnWindow is ProgressBar && (string)entityOnWindow.Tag is "HealthBarTag" || (string)entityOnWindow.Tag is "ProjectileCounterBarTag")
+                {
+                    if (entityOnWindow.Bounds.IntersectsWith(Robot.Bounds))
+                    {
+                        Robot.Location = new Point((this.ClientSize.Width / 2) - (Robot.Width / 2), 521);
                     }
                 }
             }
             
             foreach (Control entityDown in this.Controls)
             {
-                if (entityDown is PictureBox && (string)entityDown.Name == "LaunchDown")
+                if (entityDown is PictureBox && (string)entityDown.Tag is "DownProjectileTag")
                 {
                     if (entityDown.Bounds.IntersectsWith(patern3.Bounds))
                     {
-                        xCoord = (MainPlayer.Width / 2) + MainPlayer.Left;
-                        MainPlayer.Location = new Point(xCoord - 32, 367);
+                        xCoord = (Robot.Width / 2) + Robot.Left;
+                        Robot.Location = new Point(xCoord - (Robot.Width / 2), 367);
                         entityDown.Dispose();
                     }
                     if (entityDown.Bounds.IntersectsWith(patern4.Bounds))
                     {
-                        xCoord = (MainPlayer.Width / 2) + MainPlayer.Left;
-                        MainPlayer.Location = new Point(xCoord - 32, 520);
+                        xCoord = (Robot.Width / 2) + Robot.Left;
+                        Robot.Location = new Point(xCoord - (Robot.Width / 2), 521);
                         entityDown.Dispose();
                     }
                     if (entityDown.Bounds.IntersectsWith(patern2.Bounds))
                     {
-                        xCoord = (MainPlayer.Width / 2) + MainPlayer.Left;
-                        MainPlayer.Location = new Point(xCoord - 32, 520);
+                        xCoord = (Robot.Width / 2) + Robot.Left;
+                        Robot.Location = new Point(xCoord - (Robot.Width / 2), 521);
                         entityDown.Dispose();
                     }
                     if (entityDown.Bounds.IntersectsWith(patern.Bounds))
                     {
-                        xCoord = (MainPlayer.Width / 2) + MainPlayer.Left;
-                        MainPlayer.Location = new Point(xCoord - 32, 314);
+                        xCoord = (Robot.Width / 2) + Robot.Left;
+                        Robot.Location = new Point(xCoord - (Robot.Width / 2), 314);
                         entityDown.Dispose();
                     }
                     if (entityDown.Bounds.IntersectsWith(patern7.Bounds))
                     {
-                        xCoord = (MainPlayer.Width / 2) + MainPlayer.Left;
-                        MainPlayer.Location = new Point(xCoord - 32, 238);
+                        xCoord = (Robot.Width / 2) + Robot.Left;
+                        Robot.Location = new Point(xCoord - (Robot.Width / 2), 238);
                         entityDown.Dispose();
                     }
                     if (entityDown.Bounds.IntersectsWith(patern5.Bounds))
                     {
-                        xCoord = (MainPlayer.Width / 2) + MainPlayer.Left;
-                        MainPlayer.Location = new Point(xCoord - 32, 390);
+                        xCoord = (Robot.Width / 2) + Robot.Left;
+                        Robot.Location = new Point(xCoord - (Robot.Width / 2), 390);
                         entityDown.Dispose();
                     }
                     if (entityDown.Bounds.IntersectsWith(patern6.Bounds))
                     {
-                        xCoord = (MainPlayer.Width / 2) + MainPlayer.Left;
-                        MainPlayer.Location = new Point(xCoord - 32, 521);
+                        xCoord = (Robot.Width / 2) + Robot.Left;
+                        Robot.Location = new Point(xCoord - (Robot.Width / 2), 521);
                         entityDown.Dispose();
                     }
                 }
             }
             
-            foreach (Control navigateB in this.Controls)
+            foreach (Control upNavigation in this.Controls)
             {
-                if (navigateB is PictureBox && (string)navigateB.Name == "detectJump")
+                if (upNavigation is PictureBox && (string)upNavigation.Tag is "UpProjectileTag")
                 {
-                    if (navigateB.Top == 0)
+                    if (upNavigation.Top is 0)
                     {
-                        navigateB.Dispose();
+                        upNavigation.Dispose();
                     }
-                    if (navigateB.Bounds.IntersectsWith(patern3.Bounds))
+                    if (upNavigation.Bounds.IntersectsWith(patern3.Bounds))
                     {
-                        xCoord = (MainPlayer.Width / 2) + MainPlayer.Left;
-                        MainPlayer.Location = new Point(xCoord - 32, 154);
-                        navigateB.Dispose();
+                        xCoord = (Robot.Width / 2) + Robot.Left;
+                        Robot.Location = new Point(xCoord - 32, 154);
+                        upNavigation.Dispose();
                     }
-                    if (navigateB.Bounds.IntersectsWith(patern.Bounds))
+                    if (upNavigation.Bounds.IntersectsWith(patern.Bounds))
                     {
-                        xCoord = (MainPlayer.Width / 2) + MainPlayer.Left;
-                        MainPlayer.Location = new Point(xCoord - 32, 94);
-                        navigateB.Dispose();
+                        xCoord = (Robot.Width / 2) + Robot.Left;
+                        Robot.Location = new Point(xCoord - 32, 94);
+                        upNavigation.Dispose();
                     }
-                    if (navigateB.Bounds.IntersectsWith(patern2.Bounds))
+                    if (upNavigation.Bounds.IntersectsWith(patern2.Bounds))
                     {
-                        xCoord = (MainPlayer.Width / 2) + MainPlayer.Left;
-                        MainPlayer.Location = new Point(xCoord - 32, 314);
-                        navigateB.Dispose();
+                        xCoord = (Robot.Width / 2) + Robot.Left;
+                        Robot.Location = new Point(xCoord - 32, 314);
+                        upNavigation.Dispose();
                     }
-                    if (navigateB.Bounds.IntersectsWith(patern4.Bounds))
+                    if (upNavigation.Bounds.IntersectsWith(patern4.Bounds))
                     {
-                        xCoord = (MainPlayer.Width / 2) + MainPlayer.Left;
-                        MainPlayer.Location = new Point(xCoord - 32, 367);
-                        navigateB.Dispose();
+                        xCoord = (Robot.Width / 2) + Robot.Left;
+                        Robot.Location = new Point(xCoord - 32, 367);
+                        upNavigation.Dispose();
                     }
-                    if (navigateB.Bounds.IntersectsWith(patern5.Bounds))
+                    if (upNavigation.Bounds.IntersectsWith(patern5.Bounds))
                     {
-                        xCoord = (MainPlayer.Width / 2) + MainPlayer.Left;
-                        MainPlayer.Location = new Point(xCoord - 32, 238);
-                        navigateB.Dispose();
+                        xCoord = (Robot.Width / 2) + Robot.Left;
+                        Robot.Location = new Point(xCoord - 32, 238);
+                        upNavigation.Dispose();
                     }
-                    if (navigateB.Bounds.IntersectsWith(patern6.Bounds))
+                    if (upNavigation.Bounds.IntersectsWith(patern6.Bounds))
                     {
-                        xCoord = (MainPlayer.Width / 2) + MainPlayer.Left;
-                        MainPlayer.Location = new Point(xCoord - 32, 390);
-                        navigateB.Dispose();
+                        xCoord = (Robot.Width / 2) + Robot.Left;
+                        Robot.Location = new Point(xCoord - 32, 390);
+                        upNavigation.Dispose();
                     }
-                    if (navigateB.Bounds.IntersectsWith(patern7.Bounds))
+                    if (upNavigation.Bounds.IntersectsWith(patern7.Bounds))
                     {
-                        xCoord = (MainPlayer.Width / 2) + MainPlayer.Left;
-                        MainPlayer.Location = new Point(xCoord - 32, 66);
-                        navigateB.Dispose();
+                        xCoord = (Robot.Width / 2) + Robot.Left;
+                        Robot.Location = new Point(xCoord - 32, 66);
+                        upNavigation.Dispose();
                     }
                 }
             }
             
             foreach (Control entityTree in this.Controls)
             {
-                if (entityTree is PictureBox && (string)entityTree.Name == "tree5" ||
-                   (string)entityTree.Name == "tree" ||
-                   (string)entityTree.Name == "tree2" ||
-                   (string)entityTree.Name == "tree3" ||
-                   (string)entityTree.Name == "tree4" ||
-                   (string)entityTree.Name == "tree6" ||
-                   (string)entityTree.Name == "tree7" ||
-                   (string)entityTree.Name == "tree8" ||
-                   (string)entityTree.Name == "tree10" ||
-                   (string)entityTree.Name == "tree11" ||
-                   (string)entityTree.Name == "tree12" ||
-                   (string)entityTree.Name == "tree13" ||
-                   (string)entityTree.Name == "tree14" ||
-                   (string)entityTree.Name == "tree15"
-                )
+                if (entityTree is PictureBox && (string)entityTree.Tag is "Tree")
                 {
-                    if (MainPlayer.Bounds.IntersectsWith(entityTree.Bounds))
+                    if (Robot.Bounds.IntersectsWith(entityTree.Bounds))
                     {
-                        pvBar -= 4;
-                        MainPlayer.Location = new Point((this.ClientSize.Width / 2) - (MainPlayer.Width / 2), 521);
+                        pvCount -= 5;
+                        Robot.Location = new Point((this.ClientSize.Width / 2) - (Robot.Width / 2), 521);
                     }
                 }
             }
-            foreach (Control entityProject in this.Controls)
+
+            foreach(Control entityTree in this.Controls)
+            foreach(Control entityProjectiles in this.Controls)
             {
-                if (entityProject is PictureBox && (string)entityProject.Name == "ProjBall")
+                if (entityProjectiles is PictureBox && (string)entityProjectiles.Tag is "ProjectileTag")
                 {
-                    if (tree.Bounds.IntersectsWith(entityProject.Bounds) ||
-                        tree2.Bounds.IntersectsWith(entityProject.Bounds) ||
-                        tree3.Bounds.IntersectsWith(entityProject.Bounds) ||
-                        tree4.Bounds.IntersectsWith(entityProject.Bounds) ||
-                        tree5.Bounds.IntersectsWith(entityProject.Bounds) ||
-                        tree6.Bounds.IntersectsWith(entityProject.Bounds) ||
-                        tree7.Bounds.IntersectsWith(entityProject.Bounds) ||
-                        tree8.Bounds.IntersectsWith(entityProject.Bounds) ||
-                        tree11.Bounds.IntersectsWith(entityProject.Bounds) ||
-                        tree10.Bounds.IntersectsWith(entityProject.Bounds) ||
-                        tree12.Bounds.IntersectsWith(entityProject.Bounds) ||
-                        tree13.Bounds.IntersectsWith(entityProject.Bounds) ||
-                        tree14.Bounds.IntersectsWith(entityProject.Bounds) ||
-                        tree15.Bounds.IntersectsWith(entityProject.Bounds))
+                    if(entityTree is PictureBox && (string)entityTree.Tag is "Tree")
                     {
-                        this.Controls.Remove(entityProject);
-                        ((PictureBox)entityProject).Dispose();
+
+                        if (entityTree.Bounds.IntersectsWith(entityProjectiles.Bounds))
+                        {
+                            this.Controls.Remove(entityProjectiles);
+                            ((PictureBox)entityProjectiles).Dispose();
+                        }
+
                     }
                 }
             }
+
+            foreach (Control entityToSet in this.Controls)
+            {
+                if (entityToSet is PictureBox && (string)entityToSet.Tag is "MoneyTag" || (string)entityToSet.Tag is "ProjectileLootTag")
+                {
+                    entityToSet.SendToBack();
+                }
+            }
+
         }
         
         private void goPlayer(object sender, KeyEventArgs e)
@@ -543,245 +585,269 @@ namespace RobotGame
             {
                 replay();
             }
-            if(e.KeyCode == Keys.K)
-            {
-                pvBar = 1;
-            }
             if (e.KeyCode == Keys.Right && gameOver != true)
             {
-                goRight = true;
-                goLeft = false;
+                isRight = true;
+                isLeft = false;
                 move = "right";
-                actMove = "right";
+                whereMoving = "right";
             }
             if (e.KeyCode == Keys.Left && gameOver != true)
             {
-                goRight = false;
-                goLeft = true;
+                isRight = false;
+                isLeft = true;
                 move = "left";
-                actMove = "left";
+                whereMoving = "left";
             }
-            if (e.KeyCode == Keys.Up && gameOver != true)
+            if (e.KeyCode == Keys.Up && gameOver != true && getNumberOfProjectilesByType("UpProjectile") < 1)
             {
-                throwJump(move);
+                goUp();
             }
-            if (e.KeyCode == Keys.Down && gameOver != true)
+            if (e.KeyCode == Keys.Down && gameOver != true && getNumberOfProjectilesByType("DownProjectile") < 1)
             {
                 goDown();
             }
-            if (e.KeyCode == Keys.Space && ammoCount >= 30 && move != "starting" && gameOver != true)
+            if (e.KeyCode == Keys.Space && projectilesCounter > 0 && move != "starting" && gameOver != true && getNumberOfProjectilesByType("BasicProjectile") < 3)
             {
-                launchBullet(move);
-                ammoCount--;
-            }
-            if(e.KeyCode == Keys.Enter)
-            {
-                Console.WriteLine(ammoCount);
+                shootGhost(move);
+                projectilesCounter--;
             }
         }
         
-        private void launchBullet(string move)
+        private void shootGhost(string move)
         {
-            projectiles bullet = new projectiles();
-            ammoCount -= 5;
-            bullet.travelStatus = move;
-            bullet.leftPosCord = (MainPlayer.Width / 2) + MainPlayer.Left;
-            bullet.topPosCord = (MainPlayer.Width / 2) + MainPlayer.Top;
-            bullet.throwProj(this);
+            projectilesCounter -= 1;
+            projectiles projectiles = new projectiles();
+            projectiles.projectileLeftCoordinate = (Robot.Width / 2) + Robot.Left;
+            projectiles.projectileTopCoordinate = (Robot.Width / 2) + Robot.Top;
+            projectiles.projectileDirection = move;
+            projectiles.launchProjectiles(this);
         }
         
         private void stopPlayer(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Right)
             {
-                goRight = false;
-                goLeft = false;
-                actMove = "stop";
+                isRight = false;
+                isLeft = false;
+                whereMoving = "stop";
             }
             
             if (e.KeyCode == Keys.Left)
             {
-                goRight = false;
-                goLeft = false;
-                actMove = "stop";
+                isRight = false;
+                isLeft = false;
+                whereMoving = "stop";
             }
         }
-        
-        private void throwJump(string moving)
+
+        private int getNumberOfProjectilesByType(string typeOfProjectile)
         {
-            navigate jumping = new navigate();
-            jumping.topPos = (MainPlayer.Width / 2) + MainPlayer.Top;
-            jumping.leftPos = (MainPlayer.Width / 2) + MainPlayer.Left;
-            jumping.startJump(this);
+
+            int numberOfProjectiles = 0;
+
+            foreach(Control projectilesEntities in this.Controls)
+            {
+                if(typeOfProjectile is "BasicProjectile" && projectilesEntities is PictureBox && (string)projectilesEntities.Tag is "ProjectileTag")
+                {
+                    numberOfProjectiles++;
+                }
+
+                if (typeOfProjectile is "UpProjectile" && projectilesEntities is PictureBox && (string)projectilesEntities.Tag is "UpProjectileTag")
+                {
+                    numberOfProjectiles++;
+                }
+
+                if (typeOfProjectile is "DownProjectile" && projectilesEntities is PictureBox && (string)projectilesEntities.Tag is "DownProjectileTag")
+                {
+                    numberOfProjectiles++;
+                }
+            }
+
+            return numberOfProjectiles;
+
+        }
+        
+        private void goUp()
+        {
+            upProjectiles upProjectile = new upProjectiles();
+            upProjectile.upProjectileLeftCoordinate = (Robot.Width / 2) + Robot.Left;
+            upProjectile.upProjectileTopCoordinate = (Robot.Width / 2) + Robot.Top;
+            upProjectile.startJump(this);
         }
 
-        private void currentPlayer(object sender, EventArgs e)
+        private void detectPlayerStatus(object sender, EventArgs e)
         {
-            if (actMove == "stop" || move == "starting")
+            if (whereMoving is "stop" || move is "starting")
             {
-                pvBar -= 4;
+                pvCount -= 10;
             }
         }
 
         private void goDown()
         {
-            downto downP = new downto();
-            downP.currentTop = (MainPlayer.Width / 2) + MainPlayer.Top + 32;
-            downP.currentLeft = (MainPlayer.Width / 2) + MainPlayer.Left;
-            downP.DownPlayer(this);
+            downProjectiles downProjectile = new downProjectiles();
+            downProjectile.downProjectileLeftCoordinate = (Robot.Width / 2) + Robot.Left;
+            downProjectile.downProjectileTopCoordinate = (Robot.Width / 2) + Robot.Top + 32;
+            downProjectile.DownPlayer(this);
         }
-        private void summonMonsterleft()
+
+        private void spawnMonsterLeft()
         {
-            for(var l = 0; l < 3; l++)
+            for(var b = 0; b < 2; b++)
             {
                 spawnGhostLeft();
             }
         }
-        private void summonMonsterRight()
+
+        private void spawnMonsterRight()
         {
-            for (var d = 0; d < 3; d++)
+            for (var c = 0; c < 2; c++)
             {
-                rightMonster();
+                spawnRightLeft();
             }
         }
         
         private void spawnGhostLeft()
         {
-            int posRandX = location.Next(0, 6);
+            int ghostLeftRandomCoordinate = randomLocation.Next(0, 6);
 
-            PictureBox ghostBox = new PictureBox();
-            ghostBox.Image = Properties.Resources.ghost;
-            ghostBox.Left = randMonsterLeft[posRandX];
-            ghostBox.Top = randTopMonster[posRandX];
-            ghostBox.Tag = "Ghostms";
-            ghostBox.Name = "monster";
+            PictureBox ghostLeftBox = new PictureBox();
+            ghostLeftBox.SizeMode = PictureBoxSizeMode.AutoSize;
+            ghostLeftBox.Image = Properties.Resources.ghost;
+            ghostLeftBox.Left = randMonsterLeft[ghostLeftRandomCoordinate];
+            ghostLeftBox.Top = randTopMonster[ghostLeftRandomCoordinate];
+            ghostLeftBox.Tag = "GhostLeftTag";
+            ghostLeftBox.Name = "GhostLeftName";
+            ghostLeftBox.BringToFront();
 
-            currentGhost.Add(ghostBox);
-            ghostBox.BringToFront();
-            this.Controls.Add(ghostBox);
+            currentLeftGhost.Add(ghostLeftBox);
+            this.Controls.Add(ghostLeftBox);
 
         }
-        private void rightMonster()
+
+        private void spawnRightLeft()
         {
-            int posRandY = location.Next(0, 3);
+            int ghostRightBoxRandomCoordinate = randomLocation.Next(0, 3);
 
-            PictureBox ghostRight = new PictureBox();
-            ghostRight.Image = Properties.Resources.ghost;
-            ghostRight.Left = randRightLeft[posRandY];
-            ghostRight.Top = randTopRight[posRandY];
-            ghostRight.Tag = "GhostR";
-            ghostRight.Name = "GhostRight";
+            PictureBox ghostRightBox = new PictureBox();
+            ghostRightBox.SizeMode = PictureBoxSizeMode.AutoSize;
+            ghostRightBox.Image = Properties.Resources.ghost;
+            ghostRightBox.Left = randRightLeft[ghostRightBoxRandomCoordinate];
+            ghostRightBox.Top = randTopRight[ghostRightBoxRandomCoordinate];
+            ghostRightBox.Tag = "GhostRightTag";
+            ghostRightBox.Name = "GhostRightName";
+            ghostRightBox.BringToFront();
 
-            currentRightGhost.Add(ghostRight);
-            ghostRight.BringToFront();
-            this.Controls.Add(ghostRight);
+            currentRightGhost.Add(ghostRightBox);
+            this.Controls.Add(ghostRightBox);
         }
-        private void spawnBullet()
+
+        private void spawnProjectilesBox()
         {
-            int bPosRand = location.Next(0, 5);
+            int bulletRandomXY = randomLocation.Next(0, 5);
 
-            PictureBox bulletPict = new PictureBox();
-            bulletPict.Image = Properties.Resources.bullet;
-            bulletPict.AutoSize = true;
-            bulletPict.Left = bulletXpos[bPosRand];
-            bulletPict.Top = bulletYpos[bPosRand];
-            bulletPict.Tag = "bulletTag";
-            bulletPict.Name = "bulletName";
+            PictureBox projectileLoot = new PictureBox();
+            projectileLoot.SizeMode = PictureBoxSizeMode.AutoSize;
+            projectileLoot.Image = Properties.Resources.weapon;
+            projectileLoot.Left = swordXpos[bulletRandomXY];
+            projectileLoot.Top = swordYpos[bulletRandomXY];
+            projectileLoot.Tag = "ProjectileLootTag";
+            projectileLoot.Name = "ProjectileLootName";
+            projectileLoot.SendToBack();
 
-            currentBullet.Add(bulletPict);
-
-            bulletPict.BringToFront();
-            this.Controls.Add(bulletPict);
+            currentProjectilesBox.Add(projectileLoot);
+            this.Controls.Add(projectileLoot);
         }
 
         private void spawnMoney(object sender, EventArgs e)
         {
-            if (moneyList.Count < 7)
+            if (money < 5)
             {
                 moneyConstructor();
             }
         }
+
         private void moneyConstructor()
         {
-            int moneyLocation = location.Next(0, 7);
+            int moneyRandomXY = randomLocation.Next(0, 7);
             PictureBox moneyPicture = new PictureBox();
-            moneyPicture.Image = Properties.Resources.dollar;
-            moneyPicture.AutoSize = true;
-            moneyPicture.Left = moneyXpos[moneyLocation];
-            moneyPicture.Top = moneyYpos[moneyLocation];
-            moneyPicture.Tag = "MoneyBox";
-            moneyPicture.Name = "Money";
-            moneyList.Add(moneyPicture);
-            moneyPicture.BringToFront();
+            moneyPicture.Image = Properties.Resources.ruby;
+            moneyPicture.SizeMode = PictureBoxSizeMode.AutoSize;
+            moneyPicture.Left = moneyXpos[moneyRandomXY];
+            moneyPicture.Top = moneyYpos[moneyRandomXY];
+            moneyPicture.Tag = "MoneyTag";
+            moneyPicture.Name = "MoneyName";
+            moneyPicture.SendToBack();
+
+            currentMoney.Add(moneyPicture);
             this.Controls.Add(moneyPicture);
         }
-        private void endGames()
+
+        private void onGameOver()
         {
 
-            foreach (Control EntityOnGames in currentBullet)
+            foreach (Control EntityOnGames in this.Controls)
             {
-                if (EntityOnGames is PictureBox && (string)EntityOnGames.Tag == "Ghostms")
+                if (EntityOnGames is PictureBox && (string)EntityOnGames.Tag is "GhostLeftTag")
                 {
                     ((PictureBox)EntityOnGames).Dispose();
                     this.Controls.Remove((PictureBox)EntityOnGames);
-                    currentGhost.Clear();
+                    currentLeftGhost.Clear();
                 }
-                if (EntityOnGames is PictureBox && (string)EntityOnGames.Tag == "GhostR")
+                if (EntityOnGames is PictureBox && (string)EntityOnGames.Tag is "GhostRightTag")
                 {
                     ((PictureBox)EntityOnGames).Dispose();
                     this.Controls.Remove((PictureBox)EntityOnGames);
                     currentRightGhost.Clear();
                 }
-                if (EntityOnGames is PictureBox && (string)EntityOnGames.Tag == "MoneyBox")
+                if (EntityOnGames is PictureBox && (string)EntityOnGames.Tag is "MoneyTag")
                 {
                     ((PictureBox)EntityOnGames).Dispose();
                     this.Controls.Remove((PictureBox)EntityOnGames);
-                    currentBullet.Clear();
+                    currentProjectilesBox.Clear();
                 }
-                if (EntityOnGames is PictureBox && (string)EntityOnGames.Tag == "bulletTag")
+                if (EntityOnGames is PictureBox && (string)EntityOnGames.Tag is "ProjectileLootTag")
                 {
                     ((PictureBox)EntityOnGames).Dispose();
                     this.Controls.Remove((PictureBox)EntityOnGames);
-                    moneyList.Clear();
+                    currentMoney.Clear();
                 }
             }
 
-            pvBar = 0;
-            MainPlayer.Location = new Point((this.ClientSize.Width / 2) - (MainPlayer.Width / 2), 520); ;
-            MainPlayer.Image = Properties.Resources.tombstone;
+            HealthBar.Value = 0;
+            ProjectileCounterBar.Value = 0;
+
+            Robot.Image = Properties.Resources.tombstone;
+            Robot.Location = new Point((this.ClientSize.Width / 2) - (Robot.Width / 2), 525); 
 
             playerStatusChecker.Stop();
             moneyTimer.Stop();
         }
+
         private void replay()
         {
-            try
-            {
-                MainTimer.Stop();
+            MainTimer.Stop();
 
-                gameOver = false;
-                MainPlayer.Image = Properties.Resources.robot;
-                pvBar = 100;
-                score = 0;
-                money = 0;
-                ammoCount = 100;
-                goLeft = false;
-                goRight = false;
-                actMove = "stop";
-                ammoEntityCount = 0;
+            gameOver = false;
+            Robot.Image = Properties.Resources.robot;
+            Robot.Location = new Point((this.ClientSize.Width / 2) - (Robot.Width / 2), 521);
+            pvCount = 100;
+            score = 0;
+            money = 0;
+            projectilesCounter = 100;
+            isLeft = false;
+            isRight = false;
+            whereMoving = "stop";
+            ProjectilesLootCounter = 0;
 
-                MainStart();
-                summonMonsterleft();
-                summonMonsterRight();
+            onLoading();
+            spawnMonsterLeft();
+            spawnMonsterRight();
 
-                MainTimer.Start();
-                playerStatusChecker.Start();
-                moneyTimer.Start();
-            }
-            catch(Exception error)
-            {
-                Console.WriteLine(error);
-            }
+            MainTimer.Start();
+            playerStatusChecker.Start();
+            moneyTimer.Start();
         }
     }
 }

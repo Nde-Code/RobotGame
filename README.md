@@ -6,19 +6,17 @@ Un petit jeu d'arcade assez compliquée à jouer mais qui est très amusant et d
 
 Vous pouvez directement cliquer ici: https://github.com/Nde-Code/RobotGame/releases/download/v1.0.0.0/RobotGame.exe
 
-> Votre antivirus va détecter le jeu comme malveillant car c'est un ".exe" non signé. Je vous recommande donc l'utilisation de "Windows Sandbox" (ou tout autre programme de machine virtuel) pour lancer le jeu si vous utilisez la version compilée (en .exe). Attention, si vous avez peu de mémoire, etc... les graphismes pourront s'avérer un peu "bugger"Votre antivirus va détecter le jeu comme malveillant car c'est un ".exe" non signé. Je vous recommande donc l'utilisation de "Windows Sandbox" (ou tout autre programme de machine virtuel) pour lancer le jeu si vous utilisez la version compilée (en .exe).
+> Votre antivirus va détecter le jeu comme malveillant car c'est un ".exe" non signé. Je vous recommande donc l'utilisation de "Windows Sandbox" (ou tout autre programme de machine virtuel) pour lancer le jeu si vous utilisez la version compilée (en .exe).
 
 # Image:
 
 ![RobotGame](https://github.com/Nde-Code/RobotGame/blob/main/RobotGame.png)
 
-# Documentation:
+# Régles, But et Contrôles:
 
-## Régles, But et Contrôles:
+Le but du jeu est de récolter les rubis et de tuer les fantômes. Pour ce faire vous avez un terrain avec des passerelles sur lequel des fantômes et des rubis apparaissent de manière aléatoire. Lorsque, vous vous cognez contre un arbre, cela vous fait perdre 5 points de vie. Interagir avec un fantôme le fait disparaître, mais vous fait perdre 5 points de vie mais vous fait gagner 5 points au score. Lorsque vous arrivez à court de munitions, vous ne pouvez plus tirer, et une épée apparaît à un endroit aléatoire sur la carte, que vous devez aller chercher pour pouvoir tirer à nouveau. Lorsque vous tombez d'une passerelle, vous perdez 5 points de vie aussi, et vous êtes téléporté à la même place que lors de l'exécution du jeu. Si vous restez inactif, vous perdez 10 points de vie donc soyez actif ! Pour vous déplacer à gauche, appuyer sur la flèche gauche de votre clavier, idem pour la droite, mais avec la flèche droite de votre clavier. Pour sauter sur une plateforme appuyer sur la touche "en haut" de votre clavier, et pour en redescendre, appuyer sur la touche "en bas" de votre clavier. La touche "espace" permet de lancer des projectiles. Appuyez sur la touche "Entrer" pour rejouer à nouveau.
 
-Le but du jeu est de récolter les pièces de monnaies et de tuer le plus de fantôme possible. Pour ce faire vous avez un terrain avec des passerelles sur lequel des fantômes et des pièces de monnaies apparaissez de manière aléatoire et il faudrait vous déplacer avec beaucoup de précision, sur ses passerelles. Lorsque, vous vous cognez contre un arbre, cela vous fait perdre 4 points de vie. Intéragir avec un fantôme le faire disparaître, mais vous fait perdre 5 points de vie et vous fait gagner 5 points au score. Lorsque vous arrivez à court de munitions, vous ne pouvez plus tirer, et un stockez de cartouche apparaît à un endroit aléatoire de la carte, et vous devez aller chercher se stocke, pour refaire le plein de cartouches. Lorsque vous tombez d'une passerelle, vous perdez 2 points de vie, et vous êtes téléporté à la même place que lors de l'exécution du jeu. Si vous restez inactif, vous perdez 4 points de vie. Pour vous déplacer à gauche, appuyer sur la flèche gauche de votre clavier, idem pour la droite, mais avec la flèche droite de votre clavier. Pour sauter sur une plateforme appuyer sur la touche "en haut" de votre clavier, et pour en redescendre, appuyer sur la touche "en bas" de votre clavier. La touche "espace" permet d'envoyer des projectiles. Appuyez sur la touche "Entrer" pour relancer le jeu.
-
-## Informations sur les graphismes:
+# Informations sur les graphismes:
 
 Les blocs de pierre faisant office de passerelles, sont fait par moi, et l'herbe orange aussi. Les autres images sont tirées d'un site qui s'appelle Flaticon.
 
@@ -30,9 +28,9 @@ Les blocs de pierre faisant office de passerelles, sont fait par moi, et l'herbe
 
 - Le robot par Freepik: https://www.flaticon.com/free-icon/robot_1006195?term=robot&page=1&position=31&page=1&position=31&related_id=1006195&origin=search
 
-- La pièce de monnaie par Freepik: https://www.flaticon.com/free-icon/money_2933116?term=money&page=1&position=24&page=1&position=24&related_id=2933116&origin=search
+- L'épée par Freepik: https://www.flaticon.com/free-icon/sword_2457005?term=sword&page=1&position=2&origin=search&related_id=2457005
 
-- Les cartouches par Freepik: https://www.flaticon.com/free-icon/bullet_884473?term=ammo&page=1&position=15&page=1&position=15&related_id=884473&origin=search
+- Les rubis par Freepik: https://www.flaticon.com/free-icon/crystal_4085915?term=ruby&page=1&position=4&origin=search&related_id=4085915
 
 - Mon Favicon est fait avec Logomakr: https://logomakr.com/
 

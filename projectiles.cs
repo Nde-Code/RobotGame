@@ -6,48 +6,48 @@ namespace RobotGame
 {
     public class projectiles
     {
-        public int leftPosCord { get; set; }
-        public int topPosCord { get; set; }
-        public string travelStatus { get; set; }
+        public int projectileLeftCoordinate { get; set; }
+        public int projectileTopCoordinate { get; set; }
+        public string projectileDirection { get; set; }
 
-        private int projPower = 20;
+        private int projectilePower = 20;
 
-        PictureBox projectilesLayer = new PictureBox();
-        Timer projCounter = new Timer();
+        PictureBox projectileElement = new PictureBox();
+        Timer projectileClock  = new Timer();
 
-        public void throwProj(Form form)
+        public void launchProjectiles(Form form)
         {
-            projectilesLayer.Size = new Size(8, 8);
-            projectilesLayer.BackColor = Color.Yellow;
-            projectilesLayer.Name = "ProjBall";
-            projectilesLayer.Tag = "ProjBallLauncher";
+            projectileElement.Size = new Size(5, 5);
+            projectileElement.BackColor = Color.Yellow;
+            projectileElement.Name = "projectileName";
+            projectileElement.Tag = "ProjectileTag";
 
-            projectilesLayer.Left = leftPosCord;
-            projectilesLayer.Top = topPosCord;
-            projectilesLayer.BringToFront();
+            projectileElement.Left = projectileLeftCoordinate;
+            projectileElement.Top = projectileTopCoordinate;
+            projectileElement.BringToFront();
 
-            form.Controls.Add(projectilesLayer);
-            projCounter.Interval = projPower;
-            projCounter.Tick += new EventHandler(projRegulator);
-            projCounter.Start();
+            form.Controls.Add(projectileElement);
+            projectileClock.Interval = projectilePower;
+            projectileClock.Tick += new EventHandler(launchTimer);
+            projectileClock.Start();
         }
-        private void projRegulator(object sender, EventArgs e)
+        private void launchTimer(object sender, EventArgs e)
         {
-            if(travelStatus == "left")
+            if(projectileDirection == "left")
             {
-                projectilesLayer.Left -= projPower;
+                projectileElement.Left -= projectilePower;
             }
-            if(travelStatus == "right")
+            if(projectileDirection == "right")
             {
-                projectilesLayer.Left += projPower;
+                projectileElement.Left += projectilePower;
             }
-            if(projectilesLayer.Left < 1 && projectilesLayer.Left < 1554)
+            if(projectileElement.Left < 1 && projectileElement.Left < 1554)
             {
-                projCounter.Stop();
-                projectilesLayer.Dispose();
-                projCounter.Dispose();
-                projCounter = null;
-                projectilesLayer = null;
+                projectileClock.Stop();
+                projectileElement.Dispose();
+                projectileClock.Dispose();
+                projectileClock  = null;
+                projectileElement = null;
             }
         }
     }
