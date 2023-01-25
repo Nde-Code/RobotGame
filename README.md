@@ -10,7 +10,7 @@ Vous pouvez directement cliquer ici: https://github.com/Nde-Code/RobotGame/relea
 
 # Image:
 
-![RobotGame](https://github.com/Nde-Code/RobotGame/blob/main/RobotGame.png)
+![RobotGame](https://github.com/Nde-Code/RobotGame/blob/main/RobotGameScreen.png)
 
 # Régles, But et Contrôles:
 
