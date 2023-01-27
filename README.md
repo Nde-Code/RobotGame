@@ -20,7 +20,7 @@ Le but du jeu est de récolter les rubis et de tuer les fantômes. Pour ce faire
 
 Les blocs de pierre faisant office de passerelles, sont fait par moi, et l'herbe orange aussi. Les autres images sont tirées d'un site qui s'appelle Flaticon.
 
-- Les arbre par Freepik: https://www.flaticon.com/free-icon/tree_490091?term=tree&page=1&position=1&page=1&position=1&related_id=490091&origin=search
+- Les arbres par Freepik: https://www.flaticon.com/free-icon/tree_490091?term=tree&page=1&position=1&page=1&position=1&related_id=490091&origin=search
 
 - Les fantômes par Smashicons: https://www.flaticon.com/free-icon/ghost_1235114?term=ghost&page=1&position=10&page=1&position=10&related_id=1235114&origin=style
 
