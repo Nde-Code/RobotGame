@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace RobotGame
@@ -762,10 +763,10 @@ namespace RobotGame
 
         private void spawnMoney(object sender, EventArgs e)
         {
-            if (money < 5)
+            if (currentMoney.Count < 5)
             {
                 moneyConstructor();
-            }
+            } 
         }
 
         private void moneyConstructor()
