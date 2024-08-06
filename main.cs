@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace RobotGame
@@ -41,11 +40,11 @@ namespace RobotGame
         };
         
         int[] swordYpos = {
-            150,
-            363,
-            310,
-            89,
-            62,
+            170, 
+            383,
+            330,
+            109,
+            82,
         };
 
         int[] moneyXpos = {
@@ -751,8 +750,8 @@ namespace RobotGame
             PictureBox projectileLoot = new PictureBox();
             projectileLoot.SizeMode = PictureBoxSizeMode.AutoSize;
             projectileLoot.Image = Properties.Resources.weapon;
-            projectileLoot.Left = swordXpos[bulletRandomXY];
-            projectileLoot.Top = swordYpos[bulletRandomXY];
+            projectileLoot.Left = swordXpos[bulletRandomXY]; 
+            projectileLoot.Top = swordYpos[bulletRandomXY]; 
             projectileLoot.Tag = "ProjectileLootTag";
             projectileLoot.Name = "ProjectileLootName";
             projectileLoot.SendToBack();
